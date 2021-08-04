@@ -40,6 +40,15 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="P2p Sync"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:onClick="P2pactivity"
+    />
+
+
     <androidx.fragment.app.FragmentContainerView
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"

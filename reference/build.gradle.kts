@@ -1,9 +1,13 @@
+val kotlin_version: String by extra
+
 plugins {
   id(Plugins.BuildPlugins.application)
   id(Plugins.BuildPlugins.kotlinAndroid)
   id(Plugins.BuildPlugins.kotlinKapt)
   id(Plugins.BuildPlugins.navSafeArgs)
 }
+
+apply { plugin("kotlin-android") }
 
 android {
   compileSdkVersion(Sdk.compileSdk)
@@ -78,4 +82,11 @@ dependencies {
   implementation(project(path = ":datacapture"))
 
   testImplementation(Dependencies.junit)
+  implementation("org.smartregister:android-p2p-sync:0.3.7-SNAPSHOT")
+}
+
+repositories {
+  mavenCentral()
+  maven(url = "https://s3.amazonaws.com/repo.commonsware.com")
+  maven(url = "https://oss.sonatype.org/content/repositories/snapshots")
 }
