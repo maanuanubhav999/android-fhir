@@ -79,7 +79,7 @@ dependencies {
   implementation(Dependencies.httpInterceptor)
   implementation(Dependencies.material)
   implementation(project(":engine"))
-  implementation(project(path = ":datacapture"))
+  implementation(project(":datacapture"))
 
   testImplementation(Dependencies.junit)
   implementation("org.smartregister:android-p2p-sync:0.3.7-SNAPSHOT")
