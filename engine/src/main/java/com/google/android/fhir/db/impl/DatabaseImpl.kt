@@ -77,6 +77,7 @@ internal class DatabaseImpl(context: Context, private val iParser: IParser, data
       val oldResource = select(resource.javaClass, resource.logicalId)
       resourceDao.update(resource)
       localChangeDao.addUpdate(oldResource, resource)
+      localChangeDao.updateRowId(resource)
     }
   }
 
