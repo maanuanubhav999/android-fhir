@@ -20,7 +20,6 @@ import android.content.Context
 import ca.uhn.fhir.context.FhirContext
 import ca.uhn.fhir.parser.IParser
 import com.google.android.fhir.FhirEngine
-import com.google.android.fhir.search.search
 import java.io.File
 import java.util.TreeSet
 import kotlinx.coroutines.runBlocking
@@ -33,8 +32,6 @@ import timber.log.Timber
 class MyReceiverDao(applicationContext: Context) : ReceiverTransferDao {
   private val lastReceived: HashMap<String, Long> = HashMap()
   private var fhirEngine: FhirEngine = FhirApplication.fhirEngine(applicationContext)
-
-
 
   override fun getDataTypes(): TreeSet<DataType> {
     val dataTypes: TreeSet<DataType> = TreeSet()
@@ -69,8 +66,8 @@ class MyReceiverDao(applicationContext: Context) : ReceiverTransferDao {
 
   private fun insertPatientRecordToDatabase(jsonArray: JSONArray) {
     val iParser: IParser = FhirContext.forR4().newJsonParser()
-    for (i in 0 until jsonArray.length()){
-      var temp :String = jsonArray[i].toString()
+    for (i in 0 until jsonArray.length()) {
+      var temp: String = jsonArray[i].toString()
       val parsed: Patient = iParser.parseResource(Patient::class.java, temp)
       runBlocking { fhirEngine.save(parsed) }
     }

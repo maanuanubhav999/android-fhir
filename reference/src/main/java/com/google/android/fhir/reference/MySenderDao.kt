@@ -23,7 +23,6 @@ import ca.uhn.fhir.parser.IParser
 import com.google.android.fhir.FhirEngine
 import com.google.android.fhir.search.search
 import java.util.TreeSet
-import java.util.function.ToDoubleBiFunction
 import kotlinx.coroutines.runBlocking
 import org.hl7.fhir.r4.model.Patient
 import org.json.JSONArray
@@ -38,9 +37,8 @@ class MySenderDao(applicationContext: Context) : SenderTransferDao {
   private fun searchresult(): List<Patient> = runBlocking { fhirEngine.search<Patient> {} }
   private val allPatientsList: MutableList<String> = mutableListOf()
   private val iParser: IParser = FhirContext.forR4().newJsonParser()
-  val somedummyresult = searchresult().forEach {
-    allPatientsList.add(iParser.encodeResourceToString(it))
-  }
+  val somedummyresult =
+    searchresult().forEach { allPatientsList.add(iParser.encodeResourceToString(it)) }
 
   override fun getDataTypes(): TreeSet<DataType>? {
     val dataTypes: TreeSet<DataType> = TreeSet()
