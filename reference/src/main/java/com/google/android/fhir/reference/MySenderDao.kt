@@ -21,10 +21,8 @@ import android.util.Log
 import ca.uhn.fhir.context.FhirContext
 import ca.uhn.fhir.parser.IParser
 import com.google.android.fhir.FhirEngine
-import com.google.android.fhir.search.search
 import java.util.TreeSet
 import kotlinx.coroutines.runBlocking
-import org.hl7.fhir.r4.model.Patient
 import org.json.JSONArray
 import org.smartregister.p2p.model.DataType
 import org.smartregister.p2p.model.dao.SenderTransferDao
@@ -33,37 +31,33 @@ import org.smartregister.p2p.sync.data.MultiMediaData
 
 class MySenderDao(applicationContext: Context) : SenderTransferDao {
   private var fhirEngine: FhirEngine = FhirApplication.fhirEngine(applicationContext)
-
-  private fun searchresult(): List<Patient> = runBlocking { fhirEngine.search<Patient> {} }
-  private val allPatientsList: MutableList<String> = mutableListOf()
   private val iParser: IParser = FhirContext.forR4().newJsonParser()
-  val somedummyresult =
-    searchresult().forEach { allPatientsList.add(iParser.encodeResourceToString(it)) }
 
   override fun getDataTypes(): TreeSet<DataType>? {
     val dataTypes: TreeSet<DataType> = TreeSet()
-    dataTypes.add(DataType("resourceType", DataType.Type.NON_MEDIA, 0))
+    dataTypes.add(DataType("resourceEntityType", DataType.Type.NON_MEDIA, 0))
     return dataTypes
   }
 
   override fun getJsonData(dataType: DataType, lastRecordId: Long, batchSize: Int): JsonData? {
+    fun resources() = runBlocking {
+      fhirEngine.getRecordsLastRecordId(lastRecordId.toString(), batchSize)
+    }
+    val size = resources().size
+    Log.d("testing", lastRecordId.toString())
 
-    return if (dataType.name.equals("resourceType")) {
-      val jsonArray = JSONArray()
-      if (lastRecordId >= allPatientsList.size) {
+    return if (dataType.name.equals("resourceEntityType")) {
+      if (size == 0) {
         null
       } else {
-        var recordsAdded = 0
-        for (i in 0 until batchSize) {
-          if (lastRecordId + i >= allPatientsList.size) {
-            break
-          }
-          val allPatientData: String = allPatientsList[((lastRecordId + i).toInt())]
-          jsonArray.put(allPatientData)
-          recordsAdded++
-          Log.d("testing", "some record added ")
+        val jsonArray = JSONArray()
+        // just get the resource and convert them to json array
+        for (i in 0 until size) {
+          val singleData: String = resources()[(i).toInt()]
+          jsonArray.put(singleData)
         }
-        JsonData(jsonArray, lastRecordId + recordsAdded)
+
+        JsonData(jsonArray, lastRecordId + size)
       }
     } else {
       null

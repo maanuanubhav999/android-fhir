@@ -96,4 +96,6 @@ internal interface Database {
 
   /** Remove the [LocalChangeEntity] s with given ids. Call this after a successful sync. */
   suspend fun deleteUpdates(token: LocalChangeToken)
+
+  suspend fun getRecordsByLastRecordId(lastRecordId: String, batchSize: Int): List<String>
 }

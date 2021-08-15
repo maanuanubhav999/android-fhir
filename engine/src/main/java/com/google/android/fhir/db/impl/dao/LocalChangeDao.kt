@@ -160,22 +160,4 @@ internal abstract class LocalChangeDao {
   }
 
   class InvalidLocalChangeException(message: String?) : Exception(message)
-
-  @Query(
-    """
-    UPDATE resourceentity
-    set rowid = :updatedRowid
-    where resourceId = :resourceId
-  """
-  )
-  abstract suspend fun updateRowId(updatedRowid: Int, resourceId: String)
-
-  suspend fun updateRowId(resource: Resource) {
-    updateRowId(getMaxIdResourceEntity() + 1, resource.logicalId)
-  }
-
-  @Query("""
-      SELECT MAX(id) from resourceentity
-    """)
-  abstract suspend fun getMaxIdResourceEntity(): Int
 }

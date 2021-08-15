@@ -79,6 +79,8 @@ interface FhirEngine {
    * @param search
    */
   suspend fun count(search: Search): Long
+
+  suspend fun getRecordsLastRecordId(lastRecordId: String, batchSize: Int): List<String>
 }
 
 interface SyncDownloadContext {

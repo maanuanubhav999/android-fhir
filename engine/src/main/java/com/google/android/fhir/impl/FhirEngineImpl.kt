@@ -57,6 +57,11 @@ constructor(private val database: Database, private val context: Context) : Fhir
     return search.count(database)
   }
 
+  override suspend fun getRecordsLastRecordId(lastRecordId: String, batchSize: Int): List<String> {
+    return database.getRecordsByLastRecordId(lastRecordId, batchSize)
+  }
+
+
   override suspend fun syncDownload(download: suspend (SyncDownloadContext) -> List<Resource>) {
     val resources =
       download(

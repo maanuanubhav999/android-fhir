@@ -77,7 +77,7 @@ internal class DatabaseImpl(context: Context, private val iParser: IParser, data
       val oldResource = select(resource.javaClass, resource.logicalId)
       resourceDao.update(resource)
       localChangeDao.addUpdate(oldResource, resource)
-      localChangeDao.updateRowId(resource)
+      resourceDao.updateRowId(resource)
     }
   }
 
@@ -131,6 +131,13 @@ internal class DatabaseImpl(context: Context, private val iParser: IParser, data
 
   override suspend fun deleteUpdates(token: LocalChangeToken) {
     localChangeDao.discardLocalChanges(token)
+  }
+
+  override suspend fun getRecordsByLastRecordId(
+    lastRecordId: String,
+    batchSize: Int
+  ): List<String> {
+    return resourceDao.getRecordsGreaterLastRecordId(lastRecordId, batchSize)
   }
 
   companion object {

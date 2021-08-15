@@ -1,6 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
   repositories {
+    mavenLocal()
     google()
     mavenCentral()
     gradlePluginPortal()
@@ -16,6 +17,7 @@ plugins { id(Plugins.coveragePlugin) version Dependencies.Versions.coverage }
 
 allprojects {
   repositories {
+    mavenLocal()
     google()
     mavenCentral()
     maven(url = "https://oss.sonatype.org/content/repositories/snapshots")

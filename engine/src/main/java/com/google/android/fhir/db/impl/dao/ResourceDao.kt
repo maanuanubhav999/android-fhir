@@ -300,4 +300,38 @@ internal abstract class ResourceDao {
       )
     }
   }
+
+  @Query(
+    """
+    UPDATE ResourceEntity
+    SET rowid = :updatedRowid
+    WHERE resourceId = :resourceId
+  """
+  )
+  abstract suspend fun updateRowId(updatedRowid: Int, resourceId: String)
+
+  suspend fun updateRowId(resource: Resource) {
+    updateRowId(getMaxIdResourceEntity() + 1, resource.logicalId)
+  }
+
+  @Query("""
+      SELECT MAX(Rowid) FROM ResourceEntity
+    """)
+  abstract suspend fun getMaxIdResourceEntity(): Int
+
+  /*
+  new changes
+   */
+  @Query(
+    """
+    SELECT serializedResource 
+    FROM ResourceEntity
+    WHERE Rowid > :lastRecordId
+    LIMIT :batchSize
+    """
+  )
+  abstract suspend fun getRecordsGreaterLastRecordId(
+    lastRecordId: String,
+    batchSize: Int
+  ): List<String>
 }
