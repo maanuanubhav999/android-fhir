@@ -17,6 +17,7 @@
 package com.google.android.fhir.reference
 
 import android.content.Context
+import android.util.Log
 import ca.uhn.fhir.context.FhirContext
 import ca.uhn.fhir.parser.IParser
 import com.google.android.fhir.FhirEngine
@@ -45,13 +46,13 @@ class MyReceiverDao(applicationContext: Context) : ReceiverTransferDao {
   override fun receiveJson(type: DataType, jsonArray: JSONArray): Long {
     Timber.e("Received records %s of type %s", jsonArray.length().toString(), type.getName())
 
-    var lastId: Long? = lastReceived.get(type.getName())
+    var lastId: Long? = lastReceived[type.name]
 
     lastId = lastId ?: 0L
 
     val finalLastId: Long = lastId + jsonArray.length()
 
-    lastReceived.put(type.getName(), finalLastId)
+    lastReceived[type.name] = finalLastId
 
     Timber.e("Last record id of received records %s is %s", type.getName(), finalLastId.toString())
     insertPatientRecordToDatabase(jsonArray)
