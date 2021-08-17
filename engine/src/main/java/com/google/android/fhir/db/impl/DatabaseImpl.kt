@@ -26,6 +26,7 @@ import com.google.android.fhir.db.impl.dao.LocalChangeToken
 import com.google.android.fhir.db.impl.dao.LocalChangeUtils
 import com.google.android.fhir.db.impl.dao.SquashedLocalChange
 import com.google.android.fhir.db.impl.entities.LocalChangeEntity
+import com.google.android.fhir.db.impl.entities.ResourceWithRowIdIndexEntity
 import com.google.android.fhir.db.impl.entities.SyncedResourceEntity
 import com.google.android.fhir.logicalId
 import com.google.android.fhir.resource.getResourceType
@@ -133,10 +134,7 @@ internal class DatabaseImpl(context: Context, private val iParser: IParser, data
     localChangeDao.discardLocalChanges(token)
   }
 
-  override suspend fun getRecordsByLastRecordId(
-    lastRecordId: String,
-    batchSize: Int
-  ): List<String> {
+  override suspend fun getRecordsByLastRecordId(lastRecordId: Long, batchSize: Int): List<ResourceWithRowIdIndexEntity> {
     return resourceDao.getRecordsGreaterLastRecordId(lastRecordId, batchSize)
   }
 

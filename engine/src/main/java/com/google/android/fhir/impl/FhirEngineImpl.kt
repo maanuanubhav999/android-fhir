@@ -22,6 +22,7 @@ import com.google.android.fhir.SyncDownloadContext
 import com.google.android.fhir.db.Database
 import com.google.android.fhir.db.impl.dao.LocalChangeToken
 import com.google.android.fhir.db.impl.dao.SquashedLocalChange
+import com.google.android.fhir.db.impl.entities.ResourceWithRowIdIndexEntity
 import com.google.android.fhir.db.impl.entities.SyncedResourceEntity
 import com.google.android.fhir.search.Search
 import com.google.android.fhir.search.count
@@ -57,10 +58,9 @@ constructor(private val database: Database, private val context: Context) : Fhir
     return search.count(database)
   }
 
-  override suspend fun getRecordsLastRecordId(lastRecordId: String, batchSize: Int): List<String> {
+  override suspend fun getRecordsLastRecordId(lastRecordId: Long, batchSize: Int): List<ResourceWithRowIdIndexEntity> {
     return database.getRecordsByLastRecordId(lastRecordId, batchSize)
   }
-
 
   override suspend fun syncDownload(download: suspend (SyncDownloadContext) -> List<Resource>) {
     val resources =

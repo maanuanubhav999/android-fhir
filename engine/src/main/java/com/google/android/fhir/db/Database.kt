@@ -19,6 +19,7 @@ package com.google.android.fhir.db
 import com.google.android.fhir.db.impl.dao.LocalChangeToken
 import com.google.android.fhir.db.impl.dao.SquashedLocalChange
 import com.google.android.fhir.db.impl.entities.LocalChangeEntity
+import com.google.android.fhir.db.impl.entities.ResourceWithRowIdIndexEntity
 import com.google.android.fhir.db.impl.entities.SyncedResourceEntity
 import com.google.android.fhir.search.SearchQuery
 import org.hl7.fhir.r4.model.Resource
@@ -97,5 +98,5 @@ internal interface Database {
   /** Remove the [LocalChangeEntity] s with given ids. Call this after a successful sync. */
   suspend fun deleteUpdates(token: LocalChangeToken)
 
-  suspend fun getRecordsByLastRecordId(lastRecordId: String, batchSize: Int): List<String>
+  suspend fun getRecordsByLastRecordId(lastRecordId: Long, batchSize: Int): List<ResourceWithRowIdIndexEntity>
 }

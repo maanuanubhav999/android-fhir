@@ -17,21 +17,24 @@
 package com.google.android.fhir.reference
 
 import android.content.Context
-import android.util.Log
 import ca.uhn.fhir.context.FhirContext
 import ca.uhn.fhir.parser.IParser
 import com.google.android.fhir.FhirEngine
+import com.google.android.fhir.db.impl.entities.ResourceWithRowIdIndexEntity
+import com.google.gson.Gson
 import com.google.gson.JsonParser
 import java.io.File
 import java.util.TreeSet
 import kotlinx.coroutines.runBlocking
-import org.hl7.fhir.r4.model.Patient
 import org.hl7.fhir.r4.model.Resource
 import org.hl7.fhir.r4.model.ResourceType
 import org.json.JSONArray
 import org.smartregister.p2p.model.DataType
 import org.smartregister.p2p.model.dao.ReceiverTransferDao
 import timber.log.Timber
+
+
+
 
 class MyReceiverDao(applicationContext: Context) : ReceiverTransferDao {
   private val lastReceived: HashMap<String, Long> = HashMap()
@@ -49,12 +52,13 @@ class MyReceiverDao(applicationContext: Context) : ReceiverTransferDao {
     var lastId: Long? = lastReceived[type.name]
 
     lastId = lastId ?: 0L
+    val length = jsonArray.length()
+    val lastIndexData = jsonArray[length-1].toString() // json array last
+    val finalLastId: Long = Gson().fromJson(lastIndexData,ResourceWithRowIdIndexEntity::class.java).rowId
 
-    val finalLastId: Long = lastId + jsonArray.length()
-
-    lastReceived[type.name] = finalLastId
-
-    Timber.e("Last record id of received records %s is %s", type.getName(), finalLastId.toString())
+//    lastReceived[type.name] = finalLastId
+//
+//    Timber.e("Last record id of received records %s is %s", type.getName(), finalLastId.toString())
     insertPatientRecordToDatabase(jsonArray)
     return finalLastId
   }
@@ -71,11 +75,15 @@ class MyReceiverDao(applicationContext: Context) : ReceiverTransferDao {
   private fun insertPatientRecordToDatabase(jsonArray: JSONArray) {
     val iParser: IParser = FhirContext.forR4().newJsonParser()
     val jsonParser = JsonParser()
-    val resourceTypeReceived=jsonParser.parse(jsonArray[0].toString()).asJsonObject.getAsJsonObject()["resourceType"].asString
-    val className:ResourceType
+//    val resourceTypeReceived =
+//      jsonParser.parse(jsonArray[0].toString()).asJsonObject.getAsJsonObject()["resourceType"]
+//        .asString
+//    val className: ResourceType
+    val gson = Gson()
     for (i in 0 until jsonArray.length()) {
       var temp: String = jsonArray[i].toString()
-      val parsed = iParser.parseResource(temp)
+      val data = gson.fromJson(temp, ResourceWithRowIdIndexEntity::class.java)
+      val parsed = iParser.parseResource(data.serializedResource)
       runBlocking { fhirEngine.save(parsed as Resource) }
     }
     return

@@ -19,6 +19,7 @@ package com.google.android.fhir
 import com.google.android.fhir.db.ResourceNotFoundException
 import com.google.android.fhir.db.impl.dao.LocalChangeToken
 import com.google.android.fhir.db.impl.dao.SquashedLocalChange
+import com.google.android.fhir.db.impl.entities.ResourceWithRowIdIndexEntity
 import com.google.android.fhir.search.Search
 import org.hl7.fhir.r4.model.Resource
 import org.hl7.fhir.r4.model.ResourceType
@@ -80,7 +81,7 @@ interface FhirEngine {
    */
   suspend fun count(search: Search): Long
 
-  suspend fun getRecordsLastRecordId(lastRecordId: String, batchSize: Int): List<String>
+  suspend fun getRecordsLastRecordId(lastRecordId: Long, batchSize: Int): List<ResourceWithRowIdIndexEntity>
 }
 
 interface SyncDownloadContext {

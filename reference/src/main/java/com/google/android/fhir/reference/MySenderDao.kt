@@ -21,6 +21,8 @@ import android.util.Log
 import ca.uhn.fhir.context.FhirContext
 import ca.uhn.fhir.parser.IParser
 import com.google.android.fhir.FhirEngine
+import com.google.android.fhir.db.impl.entities.ResourceWithRowIdIndexEntity
+import com.google.gson.Gson
 import java.util.TreeSet
 import kotlinx.coroutines.runBlocking
 import org.json.JSONArray
@@ -40,10 +42,10 @@ class MySenderDao(applicationContext: Context) : SenderTransferDao {
   }
 
   override fun getJsonData(dataType: DataType, lastRecordId: Long, batchSize: Int): JsonData? {
-    fun resources() = runBlocking {
-      fhirEngine.getRecordsLastRecordId(lastRecordId.toString(), batchSize)
+    val resourceFromDataBase = runBlocking {
+      fhirEngine.getRecordsLastRecordId(lastRecordId, batchSize)
     }
-    val size = resources().size
+    val size = resourceFromDataBase.size
     Log.d("testing", lastRecordId.toString())
 
     return if (dataType.name.equals("resourceEntityType")) {
@@ -53,11 +55,11 @@ class MySenderDao(applicationContext: Context) : SenderTransferDao {
         val jsonArray = JSONArray()
         // just get the resource and convert them to json array
         for (i in 0 until size) {
-          val singleData: String = resources()[(i).toInt()]
-          jsonArray.put(singleData)
+          val singleData: ResourceWithRowIdIndexEntity = resourceFromDataBase[(i).toInt()]
+          val jsonData = Gson().toJson(singleData)
+          jsonArray.put(jsonData)
         }
-
-        JsonData(jsonArray, lastRecordId + size)
+        JsonData(jsonArray, resourceFromDataBase[size-1].rowId)
       }
     } else {
       null

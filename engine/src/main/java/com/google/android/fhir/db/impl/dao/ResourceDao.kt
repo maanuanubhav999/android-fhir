@@ -31,6 +31,7 @@ import com.google.android.fhir.db.impl.entities.PositionIndexEntity
 import com.google.android.fhir.db.impl.entities.QuantityIndexEntity
 import com.google.android.fhir.db.impl.entities.ReferenceIndexEntity
 import com.google.android.fhir.db.impl.entities.ResourceEntity
+import com.google.android.fhir.db.impl.entities.ResourceWithRowIdIndexEntity
 import com.google.android.fhir.db.impl.entities.StringIndexEntity
 import com.google.android.fhir.db.impl.entities.TokenIndexEntity
 import com.google.android.fhir.db.impl.entities.UriIndexEntity
@@ -315,23 +316,21 @@ internal abstract class ResourceDao {
   }
 
   @Query("""
-      SELECT MAX(Rowid) FROM ResourceEntity
+      SELECT MAX(rowId) FROM ResourceEntity
     """)
   abstract suspend fun getMaxIdResourceEntity(): Int
 
-  /*
-  new changes
-   */
   @Query(
     """
-    SELECT serializedResource 
+    SELECT rowId, serializedResource
     FROM ResourceEntity
-    WHERE Rowid > :lastRecordId
+    WHERE rowId > :lastRecordId
+    ORDER BY rowId ASC    
     LIMIT :batchSize
     """
   )
   abstract suspend fun getRecordsGreaterLastRecordId(
-    lastRecordId: String,
+    lastRecordId: Long,
     batchSize: Int
-  ): List<String>
+  ): List<ResourceWithRowIdIndexEntity>
 }
